@@ -1,0 +1,12 @@
+{
+	"appId": "kr.chainwork.chainpay",
+	"appName": "ChainPay",
+	"webDir": "dist",
+	"android": {
+		"backgroundColor": "#0B1020",
+		"allowMixedContent": false
+	},
+	"server": {
+		"androidScheme": "https"
+	}
+}

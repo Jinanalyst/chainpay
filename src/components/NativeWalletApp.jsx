@@ -150,21 +150,33 @@ function Onboarding({ onDone }) {
   const [importText, setImportText] = useState('')
   const [pass, setPass] = useState('')
   const [pass2, setPass2] = useState('')
+  const [confirmWords, setConfirmWords] = useState({})
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
 
+  const confirmPositions = [1, 4, 8]
   const begin = () => {
     setErr('')
+    setConfirmWords({})
     setPair(createWallet())
     setStep('phrase')
   }
-  const beginImport = () => { setErr(''); setImportText(''); setStep('importing') }
+  const beginImport = () => { setErr(''); setImportText(''); setConfirmWords({}); setStep('importing') }
   const doImport = () => {
     setErr('')
     try {
       setPair(importMnemonic(importText))
       setStep('passcode')
     } catch (e) { setErr('That doesn\'t look like a 12 or 24 word phrase.') }
+  }
+  const confirmPhrase = () => {
+    setErr('')
+    const words = pair?.mnemonic?.split(' ') || []
+    const ok = confirmPositions.every((pos) =>
+      (confirmWords[pos] || '').trim().toLowerCase() === words[pos]
+    )
+    if (!ok) return setErr('One of the words does not match. Check your backup and try again.')
+    setStep('passcode')
   }
 
   const finish = async () => {
@@ -179,8 +191,12 @@ function Onboarding({ onDone }) {
     } catch (e) { setErr(e.message || 'Could not save wallet'); setBusy(false) }
   }
 
-  const wrap = { padding: '40px 24px', maxWidth: 460, margin: '0 auto', color: C.white }
-  const h1 = { fontFamily: FONT_HEAD, fontSize: 30, fontWeight: 600, lineHeight: 1.1, letterSpacing: '-0.02em', margin: '0 0 12px' }
+  const wrap = {
+    padding: '42px 24px 28px', maxWidth: 460, margin: '0 auto', color: C.white,
+    minHeight: '100vh', boxSizing: 'border-box',
+    display: 'flex', flexDirection: 'column', justifyContent: 'center',
+  }
+  const h1 = { fontFamily: FONT_HEAD, fontSize: 32, fontWeight: 600, lineHeight: 1.06, letterSpacing: '-0.025em', margin: '0 0 12px' }
   const p = { color: C.text2, fontSize: 15, lineHeight: 1.5, marginBottom: 24 }
   const btnPrimary = {
     width: '100%', padding: '14px 0', borderRadius: 14, marginTop: 16,
@@ -196,6 +212,43 @@ function Onboarding({ onDone }) {
     background: C.surface, border: '1px solid ' + C.lineStr, color: C.white,
     borderRadius: 12, fontSize: 15, outline: 'none', fontFamily: 'inherit',
   }
+  const stepPill = (label) => (
+    <div style={{
+      alignSelf: 'flex-start', marginBottom: 18,
+      fontFamily: FONT_MONO, fontSize: 11, letterSpacing: '0.16em',
+      color: C.teal, textTransform: 'uppercase',
+      padding: '7px 10px', borderRadius: 999,
+      background: 'rgba(0,224,184,0.10)', border: '1px solid rgba(0,224,184,0.25)',
+    }}>{label}</div>
+  )
+  const valueCard = (title, detail, icon, onClick, recommended = false) => (
+    <button onClick={onClick} style={{
+      width: '100%', textAlign: 'left', display: 'flex', gap: 14,
+      padding: 16, marginTop: 12, borderRadius: 18,
+      background: C.surface, color: C.white,
+      border: '1px solid ' + (recommended ? 'rgba(0,224,184,0.32)' : C.lineStr),
+      boxShadow: recommended ? '0 16px 32px -24px rgba(0,224,184,0.75)' : 'none',
+      cursor: 'pointer',
+    }}>
+      <span style={{
+        width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+        background: 'rgba(0,224,184,0.10)', border: '1px solid rgba(0,224,184,0.25)',
+        display: 'grid', placeItems: 'center',
+      }}>{icon}</span>
+      <span style={{ minWidth: 0 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: 16 }}>
+          {title}
+          {recommended && <span style={{
+            color: C.teal, fontSize: 10, fontFamily: FONT_MONO, letterSpacing: '0.08em',
+            padding: '3px 7px', borderRadius: 999, background: 'rgba(0,224,184,0.12)',
+          }}>NEW</span>}
+        </span>
+        <span style={{ display: 'block', color: C.text2, fontSize: 13, lineHeight: 1.45, marginTop: 5 }}>
+          {detail}
+        </span>
+      </span>
+    </button>
+  )
   const errBox = err ? (
     <div style={{
       marginTop: 12, padding: '10px 12px', borderRadius: 10,
@@ -203,6 +256,119 @@ function Onboarding({ onDone }) {
       color: C.red, fontSize: 13,
     }}>{err}</div>
   ) : null
+
+  if (step === 'welcome') return (
+    <div style={wrap}>
+      {stepPill('Secure / Activate')}
+      <div style={{
+        position: 'relative', width: 112, height: 112, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(0,224,184,0.20), transparent 65%)',
+        border: '1px dashed rgba(0,224,184,0.32)', display: 'grid',
+        placeItems: 'center', marginBottom: 28,
+      }}>
+        <div style={{ width: 66, height: 66, borderRadius: 20, background: 'rgba(0,224,184,0.16)',
+          border: '1px solid rgba(0,224,184,0.3)', display: 'grid', placeItems: 'center' }}>
+          <IconWalletI size={30} stroke={C.teal}/>
+        </div>
+      </div>
+      <h1 style={h1}>ChainPay, ready for real crypto.</h1>
+      <p style={p}>Create or import a self-custodial wallet, receive with QR, buy through Coinbase Onramp, and send signed transactions from this phone.</p>
+      {valueCard(
+        'Create a new wallet',
+        'Generate a fresh recovery phrase on-device and encrypt it with your passcode.',
+        <IconKey size={22} stroke={C.teal}/>,
+        begin,
+        true,
+      )}
+      {valueCard(
+        'Import a wallet',
+        'Restore any standard 12 or 24 word EVM recovery phrase.',
+        <IconWalletI size={22} stroke={C.teal}/>,
+        beginImport,
+      )}
+      <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 8, color: C.muted, fontSize: 12 }}>
+        <IconShieldCheck size={15} stroke={C.muted}/>
+        Private keys stay encrypted on this device.
+      </div>
+    </div>
+  )
+
+  if (step === 'importing') return (
+    <div style={wrap}>
+      {stepPill('Import wallet')}
+      <h1 style={h1}>Restore from phrase</h1>
+      <p style={p}>Paste your 12 or 24 word recovery phrase. Words separated by spaces.</p>
+      <textarea
+        value={importText}
+        onChange={(e) => setImportText(e.target.value)}
+        rows={4}
+        placeholder="word word word ..."
+        style={{ ...input, fontFamily: FONT_MONO, fontSize: 14, resize: 'vertical' }}
+      />
+      {errBox}
+      <button onClick={doImport} style={btnPrimary}>Continue</button>
+      <button onClick={() => setStep('welcome')} style={btnGhost}>Back</button>
+    </div>
+  )
+
+  if (step === 'phrase') {
+    const words = pair.mnemonic.split(' ')
+    return (
+      <div style={wrap}>
+        {stepPill('Backup phrase')}
+        <h1 style={h1}>Your recovery phrase</h1>
+        <p style={p}>Write these words down in order and keep them offline. Anyone with this phrase can control the wallet.</p>
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8,
+          padding: 14, background: C.surface, border: '1px solid ' + C.lineStr, borderRadius: 14,
+        }}>
+          {words.map((w, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'baseline', gap: 8,
+              padding: '8px 10px', background: C.bg, borderRadius: 10,
+              fontFamily: FONT_MONO, fontSize: 14,
+            }}>
+              <span style={{ color: C.muted, fontSize: 11 }}>{(i + 1).toString().padStart(2, '0')}</span>
+              <span>{w}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{
+          marginTop: 14, padding: 12, borderRadius: 12,
+          background: 'rgba(255,181,71,0.10)', border: '1px solid rgba(255,181,71,0.25)',
+          color: C.text2, fontSize: 12, lineHeight: 1.45,
+        }}>
+          ChainPay cannot recover this phrase for you. Do not screenshot or share it.
+        </div>
+        <button onClick={() => setStep('confirm')} style={btnPrimary}>I saved it</button>
+      </div>
+    )
+  }
+
+  if (step === 'confirm') return (
+    <div style={wrap}>
+      {stepPill('Confirm backup')}
+      <h1 style={h1}>Confirm three words.</h1>
+      <p style={p}>This verifies your backup before ChainPay encrypts the wallet on this device.</p>
+      {confirmPositions.map((pos) => (
+        <div key={pos} style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 6 }}>
+            Word {pos + 1}
+          </div>
+          <input
+            value={confirmWords[pos] || ''}
+            onChange={(e) => setConfirmWords((v) => ({ ...v, [pos]: e.target.value }))}
+            placeholder={`Enter word ${pos + 1}`}
+            autoCapitalize="none"
+            style={{ ...input, fontFamily: FONT_MONO }}
+          />
+        </div>
+      ))}
+      {errBox}
+      <button onClick={confirmPhrase} style={btnPrimary}>Verify backup</button>
+      <button onClick={() => setStep('phrase')} style={btnGhost}>Show me again</button>
+    </div>
+  )
 
   if (step === 'welcome') return (
     <div style={wrap}>
