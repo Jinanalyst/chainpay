@@ -2620,6 +2620,404 @@ function DesktopWalletApp() {
   )
 }
 
+/* ══════════════════════════════════════════════════════════════════════════ *
+ * Light marketing landing — redesigned to match the ChainPay brand mock.
+ * Rendered for web visitors; the dark desktop wallet still lives at
+ * #/pay/desktop and the native app boots straight into the wallet.
+ *
+ * Phone visuals: the hero embeds the real, drivable <WalletApp/> so visitors
+ * can preview the live wallet; decorative screens elsewhere use <MiniPhone/>,
+ * a lightweight static mock, to keep the page fast.
+ * ══════════════════════════════════════════════════════════════════════════ */
+const L = {
+  bg:'#F4F7FB', ink:'#0E1322', muted:'#5A6378', muted2:'#8A92A6',
+  card:'#FFFFFF', border:'rgba(14,19,34,0.06)', borderStr:'rgba(14,19,34,0.14)',
+  teal:'#00BFA0', tealDark:'#00866E', tealOn:'#06231D',
+  mint:'#E7FBF4', lilac:'#EEF1FF',
+}
+
+const navLink   = { textDecoration:'none', color:L.muted, fontWeight:500, fontSize:15 }
+const heroBadge = {
+  display:'inline-flex', alignItems:'center', gap:8, fontFamily:FONT_MONO, fontSize:12,
+  letterSpacing:'0.16em', textTransform:'uppercase', color:L.tealDark, background:L.mint,
+  border:'1px solid rgba(0,191,160,0.22)', padding:'7px 13px', borderRadius:999,
+}
+const liveDot     = { width:6, height:6, borderRadius:'50%', background:'#00BFA0', boxShadow:'0 0 8px #00BFA0' }
+const btnPrimary  = {
+  textDecoration:'none', display:'inline-flex', alignItems:'center', gap:9,
+  background:'linear-gradient(135deg,#00E0B8,#00B496)', color:L.tealOn, fontWeight:700,
+  fontSize:16, padding:'15px 26px', borderRadius:14, boxShadow:'0 14px 30px -10px rgba(0,191,160,0.6)',
+}
+const btnGhost = {
+  textDecoration:'none', display:'inline-flex', alignItems:'center', gap:9, color:L.ink,
+  fontWeight:600, fontSize:16, padding:'15px 22px', borderRadius:14,
+  border:'1px solid '+L.borderStr, background:'#fff',
+}
+const eyebrow = { fontFamily:FONT_MONO, fontSize:12, letterSpacing:'0.18em', textTransform:'uppercase', color:L.tealDark }
+
+const ArrowR = ({ stroke='#06231D' }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+)
+const DownloadGlyph = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06231D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/></svg>
+)
+const Logo = ({ size=34, font=20 }) => (
+  <div style={{ display:'flex', alignItems:'center', gap:11 }}>
+    <div style={{ width:size, height:size, borderRadius:Math.round(size*0.32), background:'linear-gradient(150deg,#00E0B8,#00B496)', display:'grid', placeItems:'center', boxShadow:'0 6px 16px -4px rgba(0,191,160,0.5)' }}>
+      <svg width={Math.round(size*0.59)} height={Math.round(size*0.59)} viewBox="0 0 24 24" fill="none" stroke="#06231D" strokeWidth="2.2" strokeLinecap="round"><path d="M9.5 14.5l5-5M8 11l-2 2a3 3 0 004.2 4.2l2-2M16 13l2-2a3 3 0 00-4.2-4.2l-2 2"/></svg>
+    </div>
+    <span style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:font, letterSpacing:'-0.02em', color:L.ink }}>ChainPay</span>
+  </div>
+)
+
+/* ── Nav ──────────────────────────────────────────────────────────────────── */
+const LandingNav = () => (
+  <div style={{ position:'sticky', top:0, zIndex:50, backdropFilter:'blur(14px)', WebkitBackdropFilter:'blur(14px)', background:'rgba(244,247,251,0.82)', borderBottom:'1px solid '+L.border }}>
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'16px 32px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <Logo/>
+      <div className="cp-nav-links" style={{ display:'flex', alignItems:'center', gap:32 }}>
+        <a className="cp-link" href="#how" style={navLink}>How it works</a>
+        <a className="cp-link" href="#chains" style={navLink}>Chains</a>
+        <a className="cp-link" href="#/pay/desktop" style={navLink}>Web wallet</a>
+        <a href={APK.file} download={APK.filename} style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:8, background:L.ink, color:'#fff', fontWeight:600, fontSize:15, padding:'11px 20px', borderRadius:999 }}>Download now</a>
+      </div>
+    </div>
+  </div>
+)
+
+/* ── Hero (split) ─────────────────────────────────────────────────────────── */
+const Stat = ({ big, label }) => (
+  <div>
+    <div style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:24, letterSpacing:'-0.02em', color:L.ink }}>{big}</div>
+    <div style={{ fontFamily:FONT_MONO, fontSize:11, color:L.muted2, letterSpacing:'0.06em' }}>{label}</div>
+  </div>
+)
+const VRule = () => <div style={{ width:1, height:34, background:'rgba(14,19,34,0.1)' }}/>
+const FloatCard = ({ pos, bg, icon, title, sub }) => (
+  <div style={{ position:'absolute', ...pos, background:'#fff', border:'1px solid rgba(14,19,34,0.08)', borderRadius:14, padding:'11px 14px', boxShadow:'0 16px 30px -12px rgba(14,19,34,0.2)', display:'flex', alignItems:'center', gap:9 }}>
+    <div style={{ width:30, height:30, borderRadius:9, background:bg, display:'grid', placeItems:'center' }}>{icon}</div>
+    <div>
+      <div style={{ fontWeight:700, fontSize:13, color:L.ink }}>{title}</div>
+      <div style={{ fontFamily:FONT_MONO, fontSize:10, color:L.muted2 }}>{sub}</div>
+    </div>
+  </div>
+)
+const LandingHero = () => (
+  <div className="cp-hero" style={{ maxWidth:1200, margin:'0 auto', padding:'64px 32px 40px', display:'grid', gridTemplateColumns:'1.05fr 0.95fr', gap:48, alignItems:'center' }}>
+    <div>
+      <div style={heroBadge}><span style={liveDot}/>Self-custody · 9 chains · ~3s</div>
+      <h1 className="cp-h1" style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:62, lineHeight:1.02, letterSpacing:'-0.035em', margin:'24px 0 0', color:L.ink }}>Crypto payments that feel like sending a text.</h1>
+      <p style={{ fontSize:19, lineHeight:1.55, color:L.muted, margin:'22px 0 0', maxWidth:480 }}>Hold, swap, and spend across nine chains from one friendly wallet. Self-custody by default, global from day one, and settled in seconds — not days.</p>
+      <div style={{ display:'flex', alignItems:'center', gap:14, marginTop:32, flexWrap:'wrap' }}>
+        <a href={APK.file} download={APK.filename} style={btnPrimary}>Download now <ArrowR/></a>
+        <a href="#how" style={btnGhost}>See how it works</a>
+      </div>
+      <div style={{ display:'flex', alignItems:'center', gap:26, marginTop:36, flexWrap:'wrap' }}>
+        <Stat big="9 chains" label="ONE BALANCE"/>
+        <VRule/>
+        <Stat big="~3s" label="SETTLEMENT"/>
+        <VRule/>
+        <Stat big="0" label="HIDDEN FEES"/>
+      </div>
+    </div>
+    <div style={{ position:'relative', display:'flex', justifyContent:'center' }}>
+      <div style={{ position:'absolute', inset:'-6% -4%', borderRadius:36, background:'radial-gradient(60% 55% at 60% 35%, rgba(0,224,184,0.28), transparent 70%), linear-gradient(160deg,#E7FBF4,#EEF1FF)' }}/>
+      <div style={{ position:'relative', width:300, maxWidth:'100%' }}>
+        <WalletApp/>
+        <FloatCard pos={{ top:'18%', left:-40 }} bg={L.mint}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00BFA0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 3l-8 11h6l-1 7 8-11h-6l1-7z"/></svg>}
+          title="Settled" sub="in 2.8s"/>
+        <FloatCard pos={{ bottom:'14%', right:-34 }} bg={L.lilac}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2A6FDB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>}
+          title="Your keys" sub="self-custody"/>
+      </div>
+    </div>
+  </div>
+)
+
+/* ── Value pillars ────────────────────────────────────────────────────────── */
+const ValuePillars = () => {
+  const items = [
+    { title:'Simple', tile:'#E7FBF4', stroke:'#00BFA0', icon:<path d="M5 13l4 4L19 7"/>, body:'Set up in thirty seconds. No seed-phrase headaches, no jargon.' },
+    { title:'Secure', tile:'#EEF1FF', stroke:'#2A6FDB', icon:<path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/>, body:'Your keys, your crypto. Fully self-custodial, always.' },
+    { title:'Global', tile:'#F1ECFF', stroke:'#7A4DFF', icon:<><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></>, body:'Send and receive across borders and chains, in any currency.' },
+    { title:'Instant', tile:'#FFF1E6', stroke:'#E08A2A', icon:<path d="M13 3l-8 11h6l-1 7 8-11h-6l1-7z"/>, body:'Payments settle in seconds, with fees you can actually see.' },
+  ]
+  return (
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'72px 32px 8px' }}>
+      <div className="cp-pillars" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:20 }}>
+        {items.map((p) => (
+          <div key={p.title} style={{ background:'#fff', border:'1px solid '+L.border, borderRadius:20, padding:24, boxShadow:'0 2px 12px rgba(14,19,34,0.03)' }}>
+            <div style={{ width:42, height:42, borderRadius:13, background:p.tile, display:'grid', placeItems:'center' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={p.stroke} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{p.icon}</svg>
+            </div>
+            <div style={{ fontFamily:FONT_HEAD, fontWeight:600, fontSize:18, margin:'16px 0 6px', color:L.ink }}>{p.title}</div>
+            <div style={{ fontSize:14, lineHeight:1.5, color:L.muted }}>{p.body}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── MiniPhone — lightweight static wallet mock (dark, on-brand) ──────────── */
+const MiniPhone = ({ screen='home', w=268 }) => {
+  const shell = {
+    width:w, maxWidth:'100%', aspectRatio:'268 / 560', borderRadius:34,
+    background:'linear-gradient(170deg,#141A2E,#0B1020)', border:'1px solid rgba(255,255,255,0.08)',
+    boxShadow:'0 40px 60px -24px rgba(14,19,34,0.30)', overflow:'hidden', position:'relative', color:C.white,
+  }
+  const inner = { position:'absolute', inset:0, padding:'22px 16px', display:'flex', flexDirection:'column' }
+  const head = (title) => (
+    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+      <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#00E0B8,#2A6FDB)' }}/>
+      <div style={{ fontFamily:FONT_MONO, fontSize:10, color:C.text2, background:C.surface, border:'1px solid '+C.lineStr, padding:'5px 9px', borderRadius:999 }}>{title}</div>
+      <div style={{ width:26, height:26, borderRadius:8, background:C.surface, border:'1px solid '+C.lineStr }}/>
+    </div>
+  )
+  const balCard = (
+    <div style={{ borderRadius:18, padding:16, background:'radial-gradient(120% 90% at 100% 0%, rgba(0,224,184,0.5), transparent 55%), linear-gradient(160deg,#003D34,#0B1020)', border:'1px solid rgba(0,224,184,0.25)' }}>
+      <div style={{ fontFamily:FONT_MONO, fontSize:9, letterSpacing:'0.16em', color:'rgba(244,247,251,0.65)' }}>TOTAL · USD</div>
+      <div style={{ fontFamily:FONT_HEAD, fontWeight:600, fontSize:30, marginTop:6 }}>$1,240<span style={{ color:'rgba(244,247,251,0.5)', fontSize:20 }}>.00</span></div>
+    </div>
+  )
+  const tealBtn = (t) => (
+    <div style={{ marginTop:'auto', textAlign:'center', background:C.teal, color:C.bg, fontWeight:700, fontSize:13, padding:'12px 0', borderRadius:12 }}>{t}</div>
+  )
+  const field = (label, val, mono=true) => (
+    <div style={{ marginTop:12 }}>
+      <div style={{ fontFamily:FONT_MONO, fontSize:9, letterSpacing:'0.14em', color:C.muted, marginBottom:6 }}>{label}</div>
+      <div style={{ background:C.surface2, border:'1px solid '+C.line, borderRadius:12, padding:'11px 12px', fontFamily:mono?FONT_MONO:FONT_UI, fontSize:13, color:C.white }}>{val}</div>
+    </div>
+  )
+
+  let content
+  if (screen === 'send') {
+    content = (<>
+      {head('Send')}
+      <div style={{ display:'flex', gap:6 }}>
+        {['USDC','ETH'].map((t,i)=>(
+          <div key={t} style={{ flex:1, textAlign:'center', padding:'8px 0', borderRadius:999, fontWeight:600, fontSize:12, background:i===0?C.white:'transparent', color:i===0?C.bg:C.text2, border:'1px solid '+(i===0?C.white:C.lineStr) }}>{t}</div>
+        ))}
+      </div>
+      {field('TO', '0x4f9a…3c21a91')}
+      {field('AMOUNT', '120.00', true)}
+      {tealBtn('Review 120 USDC')}
+    </>)
+  } else if (screen === 'buy') {
+    content = (<>
+      {head('Add funds')}
+      <div style={{ textAlign:'center', padding:'10px 0 4px' }}>
+        <div style={{ fontFamily:FONT_HEAD, fontWeight:600, fontSize:40 }}>$100</div>
+      </div>
+      <div style={{ display:'flex', gap:6, marginBottom:12 }}>
+        {['$50','$100','$200'].map((t,i)=>(
+          <div key={t} style={{ flex:1, textAlign:'center', padding:'7px 0', borderRadius:999, fontSize:12, fontWeight:600, background:i===1?'rgba(0,224,184,0.16)':C.surface, color:i===1?C.teal:C.text2, border:'1px solid '+(i===1?'rgba(0,224,184,0.4)':C.line) }}>{t}</div>
+        ))}
+      </div>
+      {['Coinbase Onramp','MoonPay'].map((t,i)=>(
+        <div key={t} style={{ background:C.surface, border:'1px solid '+C.line, borderRadius:12, padding:'12px', marginBottom:8, display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{ width:26, height:26, borderRadius:8, background:C.surface2 }}/>
+          <div style={{ fontSize:12, fontWeight:600 }}>{t}</div>
+        </div>
+      ))}
+      {tealBtn('Continue')}
+    </>)
+  } else if (screen === 'card') {
+    content = (<>
+      {head('Card')}
+      <div style={{ borderRadius:18, padding:18, minHeight:150, background:'linear-gradient(135deg,#00E0B8,#00B496)', color:'#06231D', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+          <div style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:15 }}>ChainPay</div>
+          <div style={{ width:30, height:22, borderRadius:5, background:'rgba(6,35,29,0.25)' }}/>
+        </div>
+        <div style={{ fontFamily:FONT_MONO, fontSize:15, letterSpacing:'0.12em' }}>•••• •••• •••• 4242</div>
+        <div style={{ fontFamily:FONT_MONO, fontSize:10, letterSpacing:'0.1em' }}>SELF-CUSTODY · BASE</div>
+      </div>
+      <div style={{ marginTop:14, background:C.surface, border:'1px solid '+C.line, borderRadius:14, padding:'12px' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}><span style={{ color:C.muted }}>Spendable</span><span style={{ fontWeight:600 }}>$1,240.00</span></div>
+      </div>
+    </>)
+  } else {
+    content = (<>
+      {head('0x4f…a91')}
+      {balCard}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:6, marginTop:14 }}>
+        {['Send','Receive','Swap','Buy'].map((a)=>(
+          <div key={a} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
+            <div style={{ width:40, height:40, borderRadius:'50%', background:C.surface, border:'1px solid '+C.lineStr }}/>
+            <span style={{ fontSize:9, color:C.text2 }}>{a}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop:14, background:C.surface, border:'1px solid '+C.line, borderRadius:16, padding:'4px 12px' }}>
+        {[['USD Coin','1,000.00'],['Ethereum','240.00']].map((r,i)=>(
+          <div key={r[0]} style={{ display:'grid', gridTemplateColumns:'30px 1fr auto', gap:10, alignItems:'center', padding:'11px 0', borderBottom:i===0?'1px solid '+C.line:0 }}>
+            <div style={{ width:30, height:30, borderRadius:'50%', background:C.surface2 }}/>
+            <div style={{ fontSize:12, fontWeight:600 }}>{r[0]}</div>
+            <div style={{ textAlign:'right', fontSize:12, fontWeight:600 }}>${r[1]}</div>
+          </div>
+        ))}
+      </div>
+    </>)
+  }
+  return <div style={shell}><div style={inner}>{content}</div></div>
+}
+
+/* ── How it works ─────────────────────────────────────────────────────────── */
+const HowItWorks = () => {
+  const steps = [
+    { n:'01', screen:'home', title:'Create your wallet', body:'Open the app and you have a self-custody wallet in seconds — keys generated on-device, secured by your face or fingerprint. No exchange account, no waiting.' },
+    { n:'02', screen:'buy',  title:'Add funds', body:'Buy crypto with a card or move assets in from anywhere — no detour through a separate exchange. Quick amounts, transparent pricing, instant credit.' },
+    { n:'03', screen:'send', title:'Send & pay anywhere', body:'Pay anyone, on any chain, with the fee and settlement time shown up front. Most transfers land in about three seconds — across the room or across the world.' },
+  ]
+  return (
+    <div id="how" style={{ maxWidth:1200, margin:'0 auto', padding:'80px 32px 40px' }}>
+      <div style={{ textAlign:'center', maxWidth:640, margin:'0 auto 56px' }}>
+        <div style={eyebrow}>How it works</div>
+        <h2 style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:44, letterSpacing:'-0.03em', margin:'14px 0 0', lineHeight:1.05, color:L.ink }}>Paid-ready in three steps</h2>
+      </div>
+      <div style={{ display:'flex', flexDirection:'column', gap:36 }}>
+        {steps.map((s, i) => {
+          const phoneFirst = i % 2 === 1
+          const phone = (
+            <div className="cp-step-img" style={{ display:'flex', justifyContent:'center' }}><MiniPhone screen={s.screen} w={268}/></div>
+          )
+          const copy = (
+            <div>
+              <div style={{ fontFamily:FONT_MONO, fontWeight:700, fontSize:14, color:L.teal, letterSpacing:'0.1em' }}>{s.n}</div>
+              <h3 style={{ fontFamily:FONT_HEAD, fontWeight:600, fontSize:32, letterSpacing:'-0.02em', margin:'10px 0 0', color:L.ink }}>{s.title}</h3>
+              <p style={{ fontSize:17, lineHeight:1.55, color:L.muted, margin:'14px 0 0', maxWidth:440 }}>{s.body}</p>
+            </div>
+          )
+          return (
+            <div key={s.n} className="cp-step" style={{ display:'grid', gridTemplateColumns:phoneFirst?'320px 1fr':'1fr 320px', gap:40, alignItems:'center', background:'#fff', border:'1px solid '+L.border, borderRadius:28, padding:44, boxShadow:'0 4px 24px rgba(14,19,34,0.04)' }}>
+              {phoneFirst ? <>{phone}{copy}</> : <>{copy}{phone}</>}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/* ── Supported chains ─────────────────────────────────────────────────────── */
+const SupportedChains = () => {
+  const mark = {
+    eth:  <svg width="15" height="22" viewBox="0 0 14 20"><path d="M7 0L0 11l7 4 7-4L7 0zM0 12l7 8 7-8-7 4-7-4z" fill="#647088"/></svg>,
+    base: <div style={{ width:16, height:16, borderRadius:'50%', background:'#fff' }}/>,
+    sol:  <svg width="19" height="14" viewBox="0 0 18 14"><path d="M3 1h13l-2 2H1l2-2zm0 5h13l-2 2H1l2-2zm0 5h13l-2 2H1l2-2z" fill="#fff"/></svg>,
+    arb:  <svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7.5" stroke="#2D74E8" strokeWidth="1.5" fill="none"/><path d="M9 4l3.5 9h-7L9 4z" fill="#2D74E8"/></svg>,
+    avax: <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 4l7 13H5L12 4z" fill="#fff"/></svg>,
+  }
+  const letter = (ch) => <span style={{ color:'#fff', fontFamily:FONT_HEAD, fontWeight:700, fontSize:18 }}>{ch}</span>
+  const chains = [
+    { name:'Ethereum', sub:'ETH · L1',     bg:'#EEF1F6', node:mark.eth },
+    { name:'Base',     sub:'BASE · L2',    bg:'#0052FF', node:mark.base },
+    { name:'Solana',   sub:'SOL · L1',     bg:'linear-gradient(135deg,#9945FF,#14F195)', node:mark.sol },
+    { name:'Polygon',  sub:'MATIC · L2',   bg:'#7B3FE4', node:letter('P') },
+    { name:'Arbitrum', sub:'ARB · L2',     bg:'#1B2A3F', node:mark.arb },
+    { name:'Optimism', sub:'OP · L2',      bg:'#FF0420', node:letter('O') },
+    { name:'USD Coin', sub:'USDC · Stable',bg:'#2775CA', node:letter('$') },
+    { name:'Avalanche',sub:'AVAX · L1',    bg:'#E84142', node:mark.avax },
+    { name:'Bitcoin',  sub:'BTC · L1',     bg:'#F7931A', node:<span style={{ color:'#fff', fontFamily:FONT_HEAD, fontWeight:700, fontSize:20 }}>₿</span> },
+  ]
+  return (
+    <div id="chains" style={{ maxWidth:1200, margin:'0 auto', padding:'64px 32px 40px' }}>
+      <div style={{ textAlign:'center', maxWidth:640, margin:'0 auto 44px' }}>
+        <div style={eyebrow}>Supported chains</div>
+        <h2 style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:44, letterSpacing:'-0.03em', margin:'14px 0 0', lineHeight:1.05, color:L.ink }}>Works across the chains you already use</h2>
+        <p style={{ fontSize:17, color:L.muted, margin:'14px 0 0' }}>Nine networks today, one unified balance — and more on the way.</p>
+      </div>
+      <div className="cp-chains" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+        {chains.map((c) => (
+          <div key={c.name} style={{ display:'flex', alignItems:'center', gap:14, background:'#fff', border:'1px solid '+L.border, borderRadius:18, padding:'18px 22px' }}>
+            <div style={{ width:42, height:42, borderRadius:'50%', background:c.bg, display:'grid', placeItems:'center', flexShrink:0 }}>{c.node}</div>
+            <div>
+              <div style={{ fontFamily:FONT_HEAD, fontWeight:600, fontSize:16, color:L.ink }}>{c.name}</div>
+              <div style={{ fontFamily:FONT_MONO, fontSize:11, color:L.muted2 }}>{c.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── Final CTA + real APK download ────────────────────────────────────────── */
+const FinalCTA = () => {
+  const downloadUrl = typeof window !== 'undefined' ? window.location.origin + APK.file : APK.file
+  return (
+    <div id="get" style={{ maxWidth:1200, margin:'48px auto 0', padding:'0 32px 80px' }}>
+      <div className="cp-cta" style={{ position:'relative', borderRadius:32, overflow:'hidden', background:'radial-gradient(70% 90% at 85% 10%, rgba(0,224,184,0.35), transparent 55%), linear-gradient(150deg,#10182E,#0B1020)', padding:'64px 56px', display:'grid', gridTemplateColumns:'1fr 300px', gap:40, alignItems:'center' }}>
+        <div style={{ position:'absolute', inset:0, opacity:0.5, backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)', backgroundSize:'30px 30px', maskImage:'radial-gradient(70% 80% at 30% 30%,#000,transparent 75%)', WebkitMaskImage:'radial-gradient(70% 80% at 30% 30%,#000,transparent 75%)' }}/>
+        <div style={{ position:'relative' }}>
+          <div style={{ fontFamily:FONT_MONO, fontSize:12, letterSpacing:'0.16em', textTransform:'uppercase', color:'#00E0B8' }}>Available on Android · {APK.version}</div>
+          <h2 style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:48, letterSpacing:'-0.03em', lineHeight:1.05, color:'#F4F7FB', margin:'16px 0 0' }}>Your money, on every chain. In one tap.</h2>
+          <p style={{ fontSize:18, lineHeight:1.55, color:'#AEB6CC', margin:'18px 0 0', maxWidth:420 }}>Join the wallet built to feel effortless — and engineered to settle in seconds. Download ChainPay and move money like it's a message.</p>
+          <div style={{ display:'flex', gap:14, marginTop:32, flexWrap:'wrap', alignItems:'center' }}>
+            <a href={APK.file} download={APK.filename} style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:10, background:'#F4F7FB', color:'#0B1020', fontWeight:700, fontSize:15, padding:'14px 22px', borderRadius:14 }}>
+              <DownloadGlyph/> Download APK · {APK.size}
+            </a>
+            <div style={{ padding:8, background:'#fff', borderRadius:12 }}>
+              <QRCode data={downloadUrl} size={64} background="#ffffff" color="#0B1020"/>
+            </div>
+            <div style={{ fontFamily:FONT_MONO, fontSize:11, color:'#7E879E', lineHeight:1.5 }}>Scan to<br/>install</div>
+          </div>
+          <div style={{ marginTop:18, fontFamily:FONT_MONO, fontSize:11, color:'#7E879E' }}>Debug-signed early-access build · min {APK.minSdk}</div>
+        </div>
+        <div style={{ position:'relative', display:'flex', justifyContent:'center' }}>
+          <MiniPhone screen="card" w={282}/>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+const LandingFooter = () => (
+  <div style={{ borderTop:'1px solid rgba(14,19,34,0.07)' }}>
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:32, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
+      <Logo size={28} font={16}/>
+      <div style={{ display:'flex', gap:24, fontSize:14 }}>
+        <a className="cp-link" href="#how" style={{ textDecoration:'none', color:L.muted }}>How it works</a>
+        <a className="cp-link" href="#chains" style={{ textDecoration:'none', color:L.muted }}>Chains</a>
+        <a className="cp-link" href="#get" style={{ textDecoration:'none', color:L.muted }}>Download</a>
+        <a className="cp-link" href="#/pay/desktop" style={{ textDecoration:'none', color:L.muted }}>Web wallet</a>
+      </div>
+      <div style={{ fontFamily:FONT_MONO, fontSize:12, color:L.muted2 }}>© 2026 ChainPay · Self-custody wallet</div>
+    </div>
+  </div>
+)
+
+/* ── Light landing shell ──────────────────────────────────────────────────── */
+const LandingPage = () => (
+  <div style={{ background:L.bg, color:L.ink, fontFamily:FONT_UI, minHeight:'100vh', overflowX:'hidden', WebkitFontSmoothing:'antialiased' }}>
+    <style>{`
+      a.cp-link:hover{ color:#0E1322 !important; }
+      @media (max-width:880px){
+        .cp-hero{ grid-template-columns:1fr !important; }
+        .cp-h1{ font-size:46px !important; }
+        .cp-cta{ grid-template-columns:1fr !important; padding:48px 28px !important; }
+        .cp-step{ grid-template-columns:1fr !important; }
+        .cp-step-img{ order:-1; }
+      }
+      @media (max-width:720px){
+        .cp-pillars{ grid-template-columns:1fr 1fr !important; }
+        .cp-chains{ grid-template-columns:1fr 1fr !important; }
+        .cp-nav-links a.cp-link{ display:none; }
+      }
+    `}</style>
+    <LandingNav/>
+    <LandingHero/>
+    <ValuePillars/>
+    <HowItWorks/>
+    <SupportedChains/>
+    <FinalCTA/>
+    <LandingFooter/>
+  </div>
+)
+
 /* ────────────────────────────────────────────────────────────────────────── */
 export default function ChainPay() {
   // Inside the installed Android app: skip all marketing chrome and boot
@@ -2630,17 +3028,5 @@ export default function ChainPay() {
   const route = useHashRoute()
   if (route.startsWith('#/pay/desktop')) return <DesktopWalletApp/>
 
-  const onDownload = () => {
-    const el = document.getElementById('download')
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-  return (
-    <Page>
-      <Topbar/>
-      <Hero onDownload={onDownload}/>
-      <div id="download"><DownloadSection/></div>
-      <WalletStage/>
-      <TaglineList/>
-    </Page>
-  )
+  return <LandingPage/>
 }
