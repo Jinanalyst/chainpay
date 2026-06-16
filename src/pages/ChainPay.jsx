@@ -1531,14 +1531,20 @@ const Hero = ({ onDownload }) => (
         and wired into every escrow on ChainWork.
       </p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <button onClick={onDownload} style={{
+        <a href={APK.file} download={APK.filename} style={{
           background: C.teal, color: C.bg, border: 0, padding: '14px 22px',
           borderRadius: 14, fontFamily: FONT_UI, fontWeight: 700, fontSize: 15,
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10,
+          textDecoration: 'none',
         }}>
           <SvgIcon stroke={C.bg} sw={2} size={18} d={<path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/>}/>
-          Download for Android
-        </button>
+          Download preview
+        </a>
+        <button onClick={onDownload} style={{
+          background: 'rgba(0,224,184,0.10)', color: C.teal, padding: '14px 18px',
+          borderRadius: 14, fontWeight: 700, fontSize: 15,
+          border: '1px solid rgba(0,224,184,0.28)', cursor: 'pointer',
+        }}>Show QR</button>
         <a href="#/pay" onClick={(e) => {
           e.preventDefault()
           const el = document.getElementById('wallet')
@@ -1556,7 +1562,7 @@ const Hero = ({ onDownload }) => (
       }}>
         {[
           ['v0.1.3', 'Latest build'],
-          ['Android 9+', 'Requires'],
+          ['QR ready', 'Phone scan'],
           ['Self-custodial', 'Always'],
         ].map(([head, sub]) => (
           <div key={sub} style={{
@@ -1659,15 +1665,15 @@ const Panel = ({ children, style = {}, label, corner }) => (
  * ────────────────────────────────────────────────────────────────────────── */
 const APK = {
   version:  '0.1.3',
-  file:     '/chainpay-v0.1.3.apk',
-  filename: 'chainpay-v0.1.3.apk',
-  size:     '33.5 MB',
-  sha256:   'a3df0141b4cc6e258950cec9a6f1556e70adcc14a9da1c2a76666bf52b7d7d99',
-  built:    'May 2026',
-  minSdk:   'Android 7 (Nougat) · API 24',
-  signer:   'Debug keystore · self-signed',
-  format:   'Signed Android APK',
-  contents: 'Multi-token activity (USDC/USDT/DAI/WETH) · native ETH/MATIC tx history · live mainnet balances · on-chain swap',
+  file:     '/downloads/chainpay-v0.1.3-web-preview.zip',
+  filename: 'chainpay-v0.1.3-web-preview.zip',
+  size:     '0.23 MB',
+  sha256:   '5a95aaffb92f87d234aba04184b3562a3f0646ed9a027c059b221392a9317e27',
+  built:    'June 2026',
+  minSdk:   'Web preview; Android APK requires Gradle build',
+  signer:   'Not APK-signed',
+  format:   'Downloadable web preview ZIP',
+  contents: 'Wallet UI, create/import flows, QR receive, send forms, balances, and Capacitor Android assets',
 }
 
 const DownloadSection = () => {
@@ -1682,10 +1688,10 @@ const DownloadSection = () => {
   }
 
   const steps = [
-    ['Tap "Download APK".', 'Your browser saves chainpay-v0.1.3.apk to Downloads.'],
-    ['Allow installs from this source.', 'Android may ask once — say yes for your browser.'],
-    ['Tap the file to install.', 'A standard Android install prompt opens. Tap Install.'],
-    ['Open ChainPay and back up your phrase.', 'On first launch the app generates your recovery phrase. Write it down — you\'re the only one with it.'],
+    ['Tap "Download preview".', 'Your browser saves the ChainPay preview ZIP to Downloads.'],
+    ['Scan the QR from your phone.', 'The QR opens the same download URL on your phone.'],
+    ['Open the included web build.', 'The preview lets you inspect the wallet UI and flows.'],
+    ['Build APK from Android Studio.', 'A native installable APK still needs the Gradle/Android build toolchain.'],
   ]
 
   return (
@@ -1693,7 +1699,7 @@ const DownloadSection = () => {
       <SectionHead
         index="01 — Download"
         title="One file. Your keys on the device that's already in your pocket."
-        body="ChainPay ships as a signed Android APK so you can install it directly — no Play-Store gatekeeper between you and your wallet. The app generates its own private key on first launch, encrypted with a passcode you set."
+        body="The QR code points to the same downloadable ChainPay preview file as the home-page button. Native APK packaging still requires an Android/Gradle build environment."
       />
 
       <div className="cp-two-col" style={{
@@ -1702,7 +1708,7 @@ const DownloadSection = () => {
         {/* Left: download card */}
         <Panel
           label="01.01 Direct download"
-          corner={`Android · ${APK.version}`}
+          corner={`Preview ${APK.version}`}
           style={{
             background:
               'radial-gradient(120% 90% at 100% 0%, rgba(0,224,184,0.18), transparent 55%),' +
@@ -1726,7 +1732,7 @@ const DownloadSection = () => {
                 ChainPay for Android
               </div>
               <div style={{ fontFamily: FONT_MONO, fontSize: 11, color: C.muted, marginTop: 4, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                {APK.filename} · {APK.size}
+                {APK.filename} - {APK.size}
               </div>
             </div>
           </div>
@@ -1742,7 +1748,7 @@ const DownloadSection = () => {
             }}
           >
             <SvgIcon stroke={C.bg} sw={2} size={18} d={<path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/>}/>
-            Download APK · {APK.size}
+            Download preview - {APK.size}
           </a>
 
           <div style={{
@@ -1776,7 +1782,7 @@ const DownloadSection = () => {
         {/* Right: QR card */}
         <Panel
           label="01.02 Install from phone"
-          corner="scan to install"
+          corner="scan to download"
         >
           <div style={{ flex: 1, display: 'grid', placeItems: 'center', textAlign: 'center', padding: '10px 0' }}>
             <div style={{
@@ -2957,7 +2963,7 @@ const FinalCTA = () => {
           <p style={{ fontSize:18, lineHeight:1.55, color:'#AEB6CC', margin:'18px 0 0', maxWidth:420 }}>Join the wallet built to feel effortless — and engineered to settle in seconds. Download ChainPay and move money like it's a message.</p>
           <div style={{ display:'flex', gap:14, marginTop:32, flexWrap:'wrap', alignItems:'center' }}>
             <a href={APK.file} download={APK.filename} style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:10, background:'#F4F7FB', color:'#0B1020', fontWeight:700, fontSize:15, padding:'14px 22px', borderRadius:14 }}>
-              <DownloadGlyph/> Download APK · {APK.size}
+              <DownloadGlyph/> Download preview - {APK.size}
             </a>
             <div style={{ padding:8, background:'#fff', borderRadius:12 }}>
               <QRCode data={downloadUrl} size={64} background="#ffffff" color="#0B1020"/>
