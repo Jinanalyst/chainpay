@@ -1531,15 +1531,8 @@ const Hero = ({ onDownload }) => (
         and wired into every escrow on ChainWork.
       </p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <a href={APK.file} download={APK.filename} style={{
-          background: C.teal, color: C.bg, border: 0, padding: '14px 22px',
-          borderRadius: 14, fontFamily: FONT_UI, fontWeight: 700, fontSize: 15,
-          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10,
-          textDecoration: 'none',
-        }}>
-          <SvgIcon stroke={C.bg} sw={2} size={18} d={<path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/>}/>
-          Download preview
-        </a>
+        <ApkButton />
+        <PlayStoreButton />
         <button onClick={onDownload} style={{
           background: 'rgba(0,224,184,0.10)', color: C.teal, padding: '14px 18px',
           borderRadius: 14, fontWeight: 700, fontSize: 15,
@@ -1561,8 +1554,8 @@ const Hero = ({ onDownload }) => (
         borderTop: '1px solid ' + C.line, flexWrap: 'wrap',
       }}>
         {[
-          ['v0.1.3', 'Latest build'],
-          ['QR ready', 'Phone scan'],
+          ['v0.1.3', 'Release target'],
+          ['2 options', 'APK / Play'],
           ['Self-custodial', 'Always'],
         ].map(([head, sub]) => (
           <div key={sub} style={{
@@ -1660,27 +1653,114 @@ const Panel = ({ children, style = {}, label, corner }) => (
   </div>
 )
 
+const PlayStoreButton = ({ light = false, compact = false }) => (
+  <a
+    href={PLAY.available ? PLAY.url : '#get'}
+    style={{
+      textDecoration: 'none',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+      padding: compact ? '11px 18px' : '14px 22px',
+      borderRadius: compact ? 999 : 14,
+      background: light ? '#F4F7FB' : 'transparent',
+      color: light ? '#0B1020' : C.white,
+      border: light ? '1px solid rgba(255,255,255,0.14)' : '1px solid ' + C.lineStr,
+      fontWeight: 700,
+      fontSize: compact ? 14 : 15,
+      opacity: PLAY.available ? 1 : 0.78,
+    }}
+  >
+    <SvgIcon
+      stroke={light ? '#0B1020' : C.white}
+      sw={1.9}
+      size={18}
+      d={<><path d="M8 6l10 6-10 6V6z"/><path d="M4 5l1.5 2.5M4 19l1.5-2.5"/></>}
+    />
+    {PLAY.available ? 'Google Play' : 'Google Play soon'}
+  </a>
+)
+
+const ApkButton = ({ light = false, compact = false }) => {
+  const shared = {
+    textDecoration: 'none',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    padding: compact ? '11px 18px' : '14px 22px',
+    borderRadius: compact ? 999 : 14,
+    fontWeight: 700,
+    fontSize: compact ? 14 : 15,
+  }
+  if (!APK.available) {
+    return (
+      <span
+        style={{
+          ...shared,
+          background: light ? 'rgba(244,247,251,0.14)' : 'rgba(0,224,184,0.10)',
+          color: light ? '#F4F7FB' : C.teal,
+          border: '1px solid ' + (light ? 'rgba(244,247,251,0.22)' : 'rgba(0,224,184,0.28)'),
+          opacity: 0.8,
+        }}
+      >
+        <SvgIcon
+          stroke={light ? '#F4F7FB' : C.teal}
+          sw={2}
+          size={18}
+          d={<path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/>}
+        />
+        APK download
+      </span>
+    )
+  }
+  return (
+    <a href={APK.file} download={APK.filename} style={{
+      ...shared,
+      background: light ? '#F4F7FB' : C.teal,
+      color: light ? '#0B1020' : C.bg,
+      border: '1px solid transparent',
+    }}>
+      <SvgIcon
+        stroke={light ? '#0B1020' : C.bg}
+        sw={2}
+        size={18}
+        d={<path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/>}
+      />
+      Download APK
+    </a>
+  )
+}
+
 /* ────────────────────────────────────────────────────────────────────────── *
  * 01 — Download flow (APK)
  * ────────────────────────────────────────────────────────────────────────── */
 const APK = {
   version:  '0.1.3',
-  file:     '/downloads/chainpay-v0.1.3-web-preview.zip',
-  filename: 'chainpay-v0.1.3-web-preview.zip',
-  size:     '0.23 MB',
-  sha256:   '5a95aaffb92f87d234aba04184b3562a3f0646ed9a027c059b221392a9317e27',
+  file:     '/downloads/chainpay-v0.1.3.apk',
+  filename: 'chainpay-v0.1.3.apk',
+  size:     'APK pending',
+  sha256:   'Pending after SDK build',
   built:    'June 2026',
-  minSdk:   'Web preview; Android APK requires Gradle build',
-  signer:   'Not APK-signed',
-  format:   'Downloadable web preview ZIP',
-  contents: 'Wallet UI, create/import flows, QR receive, send forms, balances, and Capacitor Android assets',
+  minSdk:   'Android 7 (Nougat) / API 24',
+  signer:   'Debug keystore after local build',
+  format:   'Android APK',
+  contents: 'Self-custodial wallet, send/receive, QR, import/create wallet, swaps, balances, and activity',
+  available: false,
+}
+
+const PLAY = {
+  url: 'https://play.google.com/store/apps/details?id=kr.chainwork.chainpay',
+  available: false,
+  label: 'Google Play coming soon',
 }
 
 const DownloadSection = () => {
   const [copied, setCopied] = useState(false)
   const downloadUrl = typeof window !== 'undefined'
-    ? window.location.origin + APK.file
-    : APK.file
+    ? window.location.origin + (APK.available ? APK.file : '/#get')
+    : (APK.available ? APK.file : '/#get')
   const isLocalhost = typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1|\[::1\])(:|$)/.test(window.location.host)
 
   const copyHash = async () => {
@@ -1688,18 +1768,18 @@ const DownloadSection = () => {
   }
 
   const steps = [
-    ['Tap "Download preview".', 'Your browser saves the ChainPay preview ZIP to Downloads.'],
-    ['Scan the QR from your phone.', 'The QR opens the same download URL on your phone.'],
-    ['Open the included web build.', 'The preview lets you inspect the wallet UI and flows.'],
-    ['Build APK from Android Studio.', 'A native installable APK still needs the Gradle/Android build toolchain.'],
+    ['Choose APK download.', 'The site is prepared to serve a real Android APK from the homepage and the download section.'],
+    ['Use Google Play when listed.', 'The Play Store button is reserved for the public listing that will go live soon.'],
+    ['Scan the QR from your phone.', 'The QR is scannable and lands on the mobile download section from your phone.'],
+    ['Publish the APK file.', 'Once an SDK-built APK is added at the configured path, the APK button becomes the direct installer.'],
   ]
 
   return (
     <Section first>
       <SectionHead
         index="01 — Download"
-        title="One file. Your keys on the device that's already in your pocket."
-        body="The QR code points to the same downloadable ChainPay preview file as the home-page button. Native APK packaging still requires an Android/Gradle build environment."
+        title="Two mobile download paths: APK now, Google Play soon."
+        body="The website now exposes separate APK and Google Play actions everywhere the app is promoted. The APK path is wired for a real mobile build, and the Play Store slot is reserved for the upcoming listing."
       />
 
       <div className="cp-two-col" style={{
@@ -1707,8 +1787,8 @@ const DownloadSection = () => {
       }}>
         {/* Left: download card */}
         <Panel
-          label="01.01 Direct download"
-          corner={`Preview ${APK.version}`}
+          label="01.01 APK download"
+          corner={`Android ${APK.version}`}
           style={{
             background:
               'radial-gradient(120% 90% at 100% 0%, rgba(0,224,184,0.18), transparent 55%),' +
@@ -1737,19 +1817,10 @@ const DownloadSection = () => {
             </div>
           </div>
 
-          <a
-            href={APK.file}
-            download={APK.filename}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 10,
-              marginTop: 22, padding: '14px 22px', borderRadius: 14,
-              background: C.teal, color: C.bg, fontWeight: 700, fontSize: 15,
-              textDecoration: 'none', alignSelf: 'flex-start',
-            }}
-          >
-            <SvgIcon stroke={C.bg} sw={2} size={18} d={<path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/>}/>
-            Download preview - {APK.size}
-          </a>
+          <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginTop:22 }}>
+            <ApkButton />
+            <PlayStoreButton />
+          </div>
 
           <div style={{
             marginTop: 24, display: 'grid', gap: 10,
@@ -1781,8 +1852,8 @@ const DownloadSection = () => {
 
         {/* Right: QR card */}
         <Panel
-          label="01.02 Install from phone"
-          corner="scan to download"
+          label="01.02 Phone scan"
+          corner={APK.available ? 'scan for apk' : 'scan for mobile page'}
         >
           <div style={{ flex: 1, display: 'grid', placeItems: 'center', textAlign: 'center', padding: '10px 0' }}>
             <div style={{
@@ -1794,7 +1865,7 @@ const DownloadSection = () => {
               {downloadUrl}
             </div>
             <div style={{ marginTop: 10, fontSize: 12, color: C.muted, maxWidth: 260 }}>
-              Open your phone's camera, point at the code, tap the prompt.
+              Open your phone's camera, point at the code, and jump straight to the mobile download section.
             </div>
             {isLocalhost && (
               <div style={{
@@ -2685,7 +2756,10 @@ const LandingNav = () => (
         <a className="cp-link" href="#how" style={navLink}>How it works</a>
         <a className="cp-link" href="#chains" style={navLink}>Chains</a>
         <a className="cp-link" href="#/pay/desktop" style={navLink}>Web wallet</a>
-        <a href={APK.file} download={APK.filename} style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:8, background:L.ink, color:'#fff', fontWeight:600, fontSize:15, padding:'11px 20px', borderRadius:999 }}>Download now</a>
+        <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+          <ApkButton compact />
+          <PlayStoreButton compact />
+        </div>
       </div>
     </div>
   </div>
@@ -2715,7 +2789,10 @@ const LandingHero = () => (
       <h1 className="cp-h1" style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:62, lineHeight:1.02, letterSpacing:'-0.035em', margin:'24px 0 0', color:L.ink }}>Crypto payments that feel like sending a text.</h1>
       <p style={{ fontSize:19, lineHeight:1.55, color:L.muted, margin:'22px 0 0', maxWidth:480 }}>Hold, swap, and spend across nine chains from one friendly wallet. Self-custody by default, global from day one, and settled in seconds — not days.</p>
       <div style={{ display:'flex', alignItems:'center', gap:14, marginTop:32, flexWrap:'wrap' }}>
-        <a href={APK.file} download={APK.filename} style={btnPrimary}>Download now <ArrowR/></a>
+        <div style={{ display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
+          <ApkButton light />
+          <PlayStoreButton />
+        </div>
         <a href="#how" style={btnGhost}>See how it works</a>
       </div>
       <div style={{ display:'flex', alignItems:'center', gap:26, marginTop:36, flexWrap:'wrap' }}>
@@ -2952,7 +3029,9 @@ const SupportedChains = () => {
 
 /* ── Final CTA + real APK download ────────────────────────────────────────── */
 const FinalCTA = () => {
-  const downloadUrl = typeof window !== 'undefined' ? window.location.origin + APK.file : APK.file
+  const downloadUrl = typeof window !== 'undefined'
+    ? window.location.origin + (APK.available ? APK.file : '/#get')
+    : (APK.available ? APK.file : '/#get')
   return (
     <div id="get" style={{ maxWidth:1200, margin:'48px auto 0', padding:'0 32px 80px' }}>
       <div className="cp-cta" style={{ position:'relative', borderRadius:32, overflow:'hidden', background:'radial-gradient(70% 90% at 85% 10%, rgba(0,224,184,0.35), transparent 55%), linear-gradient(150deg,#10182E,#0B1020)', padding:'64px 56px', display:'grid', gridTemplateColumns:'1fr 300px', gap:40, alignItems:'center' }}>
@@ -2962,13 +3041,12 @@ const FinalCTA = () => {
           <h2 style={{ fontFamily:FONT_HEAD, fontWeight:700, fontSize:48, letterSpacing:'-0.03em', lineHeight:1.05, color:'#F4F7FB', margin:'16px 0 0' }}>Your money, on every chain. In one tap.</h2>
           <p style={{ fontSize:18, lineHeight:1.55, color:'#AEB6CC', margin:'18px 0 0', maxWidth:420 }}>Join the wallet built to feel effortless — and engineered to settle in seconds. Download ChainPay and move money like it's a message.</p>
           <div style={{ display:'flex', gap:14, marginTop:32, flexWrap:'wrap', alignItems:'center' }}>
-            <a href={APK.file} download={APK.filename} style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:10, background:'#F4F7FB', color:'#0B1020', fontWeight:700, fontSize:15, padding:'14px 22px', borderRadius:14 }}>
-              <DownloadGlyph/> Download preview - {APK.size}
-            </a>
+            <ApkButton light />
+            <PlayStoreButton light />
             <div style={{ padding:8, background:'#fff', borderRadius:12 }}>
               <QRCode data={downloadUrl} size={64} background="#ffffff" color="#0B1020"/>
             </div>
-            <div style={{ fontFamily:FONT_MONO, fontSize:11, color:'#7E879E', lineHeight:1.5 }}>Scan to<br/>install</div>
+            <div style={{ fontFamily:FONT_MONO, fontSize:11, color:'#7E879E', lineHeight:1.5 }}>Scan for<br/>mobile options</div>
           </div>
           <div style={{ marginTop:18, fontFamily:FONT_MONO, fontSize:11, color:'#7E879E' }}>Debug-signed early-access build · min {APK.minSdk}</div>
         </div>
